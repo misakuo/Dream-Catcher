@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -141,13 +140,7 @@ public class Connector {
         protected abstract Iterable<ChromeDevtoolsDomain> getInspectorModules();
 
         final void start() {
-
-            if (!isDebuggable(mContext)) {
-                Log.e("DreamCatcher", "Not debuggable!");
-                return;
-            }
             DreamCatcherCrashHandler.getInstance().attach();
-
             //create server to handle request.
             initServerManager();
             SocketServerManager.startServer(SocketServerManager.Type.LOCAL);
