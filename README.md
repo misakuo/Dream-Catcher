@@ -5,7 +5,7 @@ Inspection the Android HTTP(S) traffic in Chrome Developer Tools
 Dream Catcher is a HTTP proxy based traffic analysis tools, provides the ability to view http(s) traffic in chrome by adapting the [Chrome Remote Debug Protocol](https://chromedevtools.github.io/debugger-protocol-viewer/).
 
 ## Usage
-- Install and launch the [Dream Catcher APP](https://github.com/misakuo/Dream-Catcher/releases/download/release-1.0/dream_catcher-1.0.apk)
+- Install and launch the [Dream Catcher APP](https://github.com/misakuo/Dream-Catcher/releases)
 - Connect your device to PC, make sure the USB debugging is active and the `adb` is usable
 - Click to enable the HTTP proxy (It's maybe need waiting a bit time)
 - Click **Install Certificate** to install CA for enable [MITM](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (Dream Catcher will not do evil, it just be using to decryption the HTTPS traffic. If do not need HTTPS inspection, you can skip this step)
