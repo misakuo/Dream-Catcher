@@ -33,7 +33,8 @@ Dream Catcher is a HTTP proxy based traffic analysis tools, provides the ability
 ## Download
 | Version        | URL           | QR Code  |
 | :-----: |:------------| :---:|
-| 1.0| [github](https://github.com/misakuo/Dream-Catcher/releases/download/release-1.0/dream_catcher-1.0.apk)    [qiniu CDN](http://sodaless.qiniudn.com/dream_catcher-1.0.apk)| ![1481604756.png](https://ooo.0o0.ooo/2016/12/13/584f7ea6f343f.png) |
+| 1.0| [github](https://github.com/misakuo/Dream-Catcher/releases/download/release-1.0.1/dream_catcher-1.0.1.apk)    [qiniu CDN](http://sodaless.qiniudn.com/dream_catcher-1.0.1.apk)| ![1481607462.png](https://ooo.0o0.ooo/2016/12/13/584f89371323d.png)
+ |
 ## Acknowledgments
 [Stetho](https://github.com/facebook/stetho)    
 [browsermob-proxy](https://github.com/lightbody/browsermob-proxy)    
