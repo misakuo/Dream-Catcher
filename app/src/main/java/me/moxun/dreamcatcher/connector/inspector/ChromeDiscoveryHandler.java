@@ -39,6 +39,8 @@ public class ChromeDiscoveryHandler implements HttpHandler {
     private static final String PATH_ACTIVATE = "/json/activate/" + PAGE_ID;
     private static final String PATH_SERVER_GET = "/json/remote";
 
+    private static boolean INVALID = false;
+
     /**
      * Latest version of the WebKit Inspector UI that we've tested again (ideally).
      */
@@ -59,6 +61,10 @@ public class ChromeDiscoveryHandler implements HttpHandler {
     private LightHttpBody mVersionResponse;
     @Nullable
     private LightHttpBody mPageListResponse;
+
+    public static void setInvalid(boolean invalid) {
+        ChromeDiscoveryHandler.INVALID = invalid;
+    }
 
     public ChromeDiscoveryHandler(Context context, String inspectorPath) {
         mContext = context;
@@ -117,7 +123,7 @@ public class ChromeDiscoveryHandler implements HttpHandler {
             throws JSONException {
         SimpleConnectorLifecycleManager.setCurrentState(Lifecycle.WAITING_FOR_WEBSOCKET);
         CaptureEvent.send("Waiting for websocket");
-        if (mPageListResponse == null) {
+        if (mPageListResponse == null || INVALID) {
             JSONArray reply = new JSONArray();
             JSONObject page = new JSONObject();
             page.put("type", "app");
@@ -139,6 +145,7 @@ public class ChromeDiscoveryHandler implements HttpHandler {
             reply.put(page);
             mPageListResponse = LightHttpBody.create(reply.toString(), "application/json");
             LogUtil.w("PageList: " + reply.toString());
+            INVALID = false;
         }
         setSuccessfulResponse(response, mPageListResponse);
     }
@@ -150,8 +157,11 @@ public class ChromeDiscoveryHandler implements HttpHandler {
     private String makeTitle() {
         StringBuilder b = new StringBuilder();
         b.append(getAppLabel());
-
-        b.append(" (powered by DreamCatcher)");
+        if (SimpleConnectorLifecycleManager.isProxyEnabled()) {
+            b.append(" (Ready)");
+        } else {
+            b.append(" (Preparing ……)");
+        }
 
         String processName = ProcessUtil.getProcessName();
         int colonIndex = processName.indexOf(':');

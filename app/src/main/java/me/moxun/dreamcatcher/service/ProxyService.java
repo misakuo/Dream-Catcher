@@ -14,6 +14,7 @@ import net.lightbody.bmp.proxy.CaptureType;
 import org.greenrobot.eventbus.EventBus;
 
 import me.moxun.dreamcatcher.DCApplication;
+import me.moxun.dreamcatcher.connector.manager.SimpleConnectorLifecycleManager;
 import me.moxun.dreamcatcher.event.CaptureEvent;
 import me.moxun.dreamcatcher.event.OperateEvent;
 
@@ -29,6 +30,7 @@ public class ProxyService extends Service {
         super.onDestroy();
         proxy.stop();
         postEvent("Stop monitoring");
+        SimpleConnectorLifecycleManager.setProxyEnabled(false);
         EventBus.getDefault().post(new OperateEvent(OperateEvent.TARGET_PROXY, false));
     }
 
@@ -54,6 +56,7 @@ public class ProxyService extends Service {
                 postEvent("Start monitoring");
                 proxy.newHar();
                 EventBus.getDefault().post(new OperateEvent(OperateEvent.TARGET_PROXY, true));
+                SimpleConnectorLifecycleManager.setProxyEnabled(true);
                 Log.e("ProxyService", "Start monitoring");
                 return Boolean.TRUE;
             }

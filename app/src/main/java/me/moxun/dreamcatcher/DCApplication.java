@@ -11,6 +11,7 @@ import me.moxun.dreamcatcher.service.ConnectorService;
 
 public class DCApplication extends MultiDexApplication {
 
+    //forgive me...
     private int port = 0;
 
     @Override

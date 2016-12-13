@@ -52,19 +52,7 @@ public class Page implements ChromeDevtoolsDomain {
         Console.ConsoleMessage message = new Console.ConsoleMessage();
         message.source = Console.MessageSource.JAVASCRIPT;
         message.level = Console.MessageLevel.LOG;
-        String art =
-                "      ___                                       ___           __               \n" +
-                        "     /  /\\          ___           ___          /  /\\         |  |\\             \n" +
-                        "    /  /::\\        /  /\\         /  /\\        /  /::\\        |  |:|            \n" +
-                        "   /  /:/\\:\\      /  /::\\       /  /::\\      /  /:/\\:\\       |  |:|            \n" +
-                        "  /  /::\\ \\:\\    /  /:/\\:\\     /  /:/\\:\\    /  /::\\ \\:\\      |__|:|__          \n" +
-                        " /__/:/\\:\\_\\:\\  /  /::\\ \\:\\   /  /::\\ \\:\\  /__/:/\\:\\ \\:\\ ____/__/::::\\         \n" +
-                        " \\__\\/  \\:\\/:/ /__/:/\\:\\_\\:\\ /__/:/\\:\\_\\:\\ \\  \\:\\ \\:\\_\\/ \\__\\::::/~~~~         \n" +
-                        "      \\__\\::/  \\__\\/  \\:\\/:/ \\__\\/  \\:\\/:/  \\  \\:\\ \\:\\      |~~|:|             \n" +
-                        "      /  /:/        \\  \\::/       \\  \\::/    \\  \\:\\_\\/      |  |:|             \n" +
-                        "     /__/:/          \\__\\/         \\__\\/      \\  \\:\\        |__|:|             \n" +
-                        "     \\__\\/                                     \\__\\/         \\__\\|             \n" +
-                        " Welcome to DreamCatcher\n Attached to process " + ProcessUtil.getProcessName() + "\n\n";
+        String art = " Welcome to DreamCatcher\n Attached to process " + ProcessUtil.getProcessName() + "\n\n";
         message.text = art;
         // Note: not using Android resources so we can maintain .jar distribution for now.
         Console.MessageAddedRequest messageAddedRequest = new Console.MessageAddedRequest();

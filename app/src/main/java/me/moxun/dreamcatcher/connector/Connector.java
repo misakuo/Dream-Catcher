@@ -14,9 +14,7 @@ import me.moxun.dreamcatcher.connector.inspector.DevtoolsSocketHandler;
 import me.moxun.dreamcatcher.connector.inspector.protocol.ChromeDevtoolsDomain;
 import me.moxun.dreamcatcher.connector.inspector.protocol.module.FileSystem;
 import me.moxun.dreamcatcher.connector.inspector.protocol.module.Network;
-import me.moxun.dreamcatcher.connector.inspector.protocol.module.Page;
-import me.moxun.dreamcatcher.connector.inspector.protocol.module.Runtime;
-import me.moxun.dreamcatcher.connector.inspector.runtime.DefaultRuntimeReplFactory;
+import me.moxun.dreamcatcher.connector.inspector.protocol.module.Profiler;
 import me.moxun.dreamcatcher.connector.log.AELog;
 import me.moxun.dreamcatcher.connector.manager.Lifecycle;
 import me.moxun.dreamcatcher.connector.manager.SimpleConnectorLifecycleManager;
@@ -69,19 +67,6 @@ public class Connector {
     public static void close() {
         SocketServerManager.stopServer();
         SimpleConnectorLifecycleManager.setCurrentState(Lifecycle.SHUTDOWN);
-    }
-
-    private static InitializerBuilder newInitializerBuilder(Context context) {
-        return new InitializerBuilder(context);
-    }
-
-    private static InspectorModulesProvider defaultInspectorModulesProvider(final Context context) {
-        return new InspectorModulesProvider() {
-            @Override
-            public Iterable<ChromeDevtoolsDomain> get() {
-                return new DefaultInspectorModulesBuilder(context).finish();
-            }
-        };
     }
 
     private static class PluginBuilder<T> {
@@ -138,11 +123,9 @@ public class Connector {
         }
 
         public Iterable<ChromeDevtoolsDomain> finish() {
-            provideIfDesired(new Runtime(new DefaultRuntimeReplFactory()));
-            provideIfDesired(new me.moxun.dreamcatcher.connector.inspector.protocol.module.Console());
             provideIfDesired(new Network(mContext));
             provideIfDesired(new FileSystem(mContext));
-            provideIfDesired(new Page(mContext));
+            provideIfDesired(new Profiler());
             return mDelegate.finish();
         }
     }

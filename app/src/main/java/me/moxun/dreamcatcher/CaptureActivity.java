@@ -30,6 +30,8 @@ public class CaptureActivity extends AppCompatActivity {
     final int INSTALL_CA_REQUEST_CODE = 0x99;
 
     private int size = 112;
+    private int defaultDuration = 500;
+    private int defaultDelay = 3000;
     private IndeterminateProgressButton controlButton;
     private TextView status;
     private int state = State.IDLE;
@@ -117,7 +119,7 @@ public class CaptureActivity extends AppCompatActivity {
         int height = $px(8);
 
         button.blockTouch();
-        button.morphToProgress(color, progressCornerRadius, width, height, 500, progressColor1, progressColor2,
+        button.morphToProgress(color, progressCornerRadius, width, height, defaultDuration, progressColor1, progressColor2,
                 progressColor3, progressColor4);
     }
 
@@ -170,17 +172,17 @@ public class CaptureActivity extends AppCompatActivity {
     public void onEvent(final OperateEvent event) {
         Log.e("Event", event.toString());
         if (event.error) {
-            if ((System.currentTimeMillis() - timestamp) < 3000) {
+            if ((System.currentTimeMillis() - timestamp) < defaultDelay) {
                 getWindow().getDecorView().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        morphToFailure(controlButton, 500);
+                        morphToFailure(controlButton, defaultDuration);
                         state = State.FAILURE;
                         status.setText(event.msg);
                     }
-                }, 3000 - (System.currentTimeMillis() - timestamp));
+                }, defaultDelay - (System.currentTimeMillis() - timestamp));
             } else {
-                morphToFailure(controlButton, 500);
+                morphToFailure(controlButton, defaultDuration);
                 state = State.FAILURE;
                 status.setText(event.msg);
             }
@@ -191,30 +193,30 @@ public class CaptureActivity extends AppCompatActivity {
 
         } else if (event.target == OperateEvent.TARGET_PROXY) {
             if (event.active) {
-                if ((System.currentTimeMillis() - timestamp) < 3000) {
+                if ((System.currentTimeMillis() - timestamp) < defaultDelay) {
                     getWindow().getDecorView().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            morphToSuccess(controlButton, 500);
+                            morphToSuccess(controlButton, defaultDuration);
                             state = State.RUNNING;
                         }
-                    }, 3000 - (System.currentTimeMillis() - timestamp));
+                    }, defaultDelay - (System.currentTimeMillis() - timestamp));
                 } else {
-                    morphToSuccess(controlButton, 500);
+                    morphToSuccess(controlButton, defaultDuration);
                     state = State.RUNNING;
                 }
             } else {
-                if ((System.currentTimeMillis() - timestamp) < 3000) {
+                if ((System.currentTimeMillis() - timestamp) < defaultDelay) {
                     getWindow().getDecorView().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            morphToIdle(controlButton, 500);
+                            morphToIdle(controlButton, defaultDuration);
                             state = State.IDLE;
                             status.setText("Click to start capture");
                         }
-                    }, 3000 - (System.currentTimeMillis() - timestamp));
+                    }, defaultDelay - (System.currentTimeMillis() - timestamp));
                 } else {
-                    morphToIdle(controlButton, 500);
+                    morphToIdle(controlButton, defaultDuration);
                     state = State.IDLE;
                     status.setText("Click to start capture");
                 }

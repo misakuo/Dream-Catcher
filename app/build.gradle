@@ -52,7 +52,6 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
 
     compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56'
-    compile 'com.robinhood.spark:spark:1.1.2'
 
     //WELCOME TO HELL
     compile('net.lightbody.bmp:littleproxy:1.1.0-beta-bmp-13') {
