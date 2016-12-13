@@ -11,7 +11,7 @@ Dream Catcher is a HTTP proxy based traffic analysis tools, provides the ability
 - Click **Install Certificate** to install CA for enable [MITM](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (Dream Catcher will not do evil, it just be using to decryption the HTTPS traffic. If do not need HTTPS inspection, you can skip this step)
 - Click **Trusted Credentials** to examine the MITM CA or remove it
 - Click **Setting Proxy** to setup proxy on active connection (General steps: 1. long click the active connection; 2. select *Modify Network* on dialog; 3. select *Manual* on the *Proxy* options; 4. input `127.0.0.1` to the *Proxy hostname* textbox; 5. input proxy port (default is `9999`) to the *Proxy port* textbox; 6. click the *SAVE* button)
-- Open Chrome and navigate to [chrome://inspect](chrome://inspect)
+- Open Chrome and navigate to **`chrome://inspect`**
 - Click **inspect** when Dream Catcher is ready
 - Select the **Network** tab to start inspection
 
