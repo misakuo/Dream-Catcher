@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Dream Catcher</string>
+    <string name="action_settings">Settings</string>
+    <string name="tips">Open <b>chrome://inspect</b> in Chrome to start inspection</string>
+</resources>
