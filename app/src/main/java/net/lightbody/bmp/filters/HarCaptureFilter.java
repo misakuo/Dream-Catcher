@@ -8,7 +8,6 @@ import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.core.har.HarCookie;
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarNameValuePair;
-import net.lightbody.bmp.core.har.HarNameVersion;
 import net.lightbody.bmp.core.har.HarPostData;
 import net.lightbody.bmp.core.har.HarPostDataParam;
 import net.lightbody.bmp.core.har.HarRequest;
@@ -63,6 +62,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
      * The harEntry is created when this filter is constructed and is shared by both the clientToProxyRequest
      * and serverToProxyResponse methods. It is added to the HarLog when the request is received from the client.
      */
+    @Deprecated
     private final HarEntry harEntry;
 
     private DCRequest harRequest;
@@ -183,7 +183,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
 
         this.proxyManager = ProxyManager.newInstance();
         this.harEntry = new HarEntry(currentPageRef);
-        harEntry.setId( proxyManager.getDCRequestId());
+        harEntry.setId(proxyManager.getDCRequestId());
         this.harRequest = new DCRequest(harEntry);
         this.harRequest.attachBodyHelper(this.proxyManager.getRequestBodyHelper());
         this.harResponse = new DCResponse(harEntry);
@@ -218,7 +218,9 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
             harEntry.setResponse(defaultHarResponse);
 
             captureQueryParameters(httpRequest);
-            captureUserAgent(httpRequest);
+            // not capturing user agent: in many cases, it doesn't make sense to capture at the HarLog level, since the proxy could be
+            // serving requests from many different clients with various user agents. clients can turn on the REQUEST_HEADERS capture type
+            // in order to capture the User-Agent header, if desired.
             captureRequestHeaderSize(httpRequest);
 
             if (dataToCapture.contains(CaptureType.REQUEST_COOKIES)) {
@@ -251,7 +253,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 captureRequestContent(requestCaptureFilter.getHttpRequest(), requestCaptureFilter.getFullRequestContents());
             }
 
-            harEntry.getRequest().setBodySize(requestBodySize.get());
+            harRequest.getRequest().setBodySize(requestBodySize.get());
         }
 
         return null;
@@ -283,7 +285,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 captureResponseContent(responseCaptureFilter.getHttpResponse(), responseCaptureFilter.getFullResponseContents());
             }
 
-            harEntry.getResponse().setBodySize(responseBodySize.get());
+            harResponse.getResponse().setBodySize(responseBodySize.get());
         }
         proxyManager.responseHeadersReceived(harResponse);
 
@@ -298,6 +300,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         harEntry.setResponse(response);
 
         response.setError(HarCaptureUtil.getResponseTimedOutErrorMessage());
+        proxyManager.httpExchangeFailed(response.getError());
 
 
         // include this timeout time in the HarTimings object
@@ -356,24 +359,6 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         }
     }
 
-    protected void captureUserAgent(HttpRequest httpRequest) {
-        Log.e("InnerHandle", "captureUserAgent " + harEntry.getId());
-        // save the browser and version if it's not yet been set
-        if (har.getLog().getBrowser() == null) {
-            String userAgentHeader = HttpHeaders.getHeader(httpRequest, HttpHeaders.Names.USER_AGENT);
-            if (userAgentHeader != null && userAgentHeader.length() > 0) {
-                try {
-//                    ReadableUserAgent uai = BrowserMobProxyUtil.getUserAgentStringParser().parse(userAgentHeader);
-//                    String browser = uai.getName();
-//                    String version = uai.getVersionNumber().toVersionString();
-                    har.getLog().setBrowser(new HarNameVersion("Mozilla/5.0 (Linux; U; Android 4.3; zh-cn; R8007 Build/JLS36C) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30", "1.0.0"));
-                } catch (RuntimeException e) {
-                    log.warn("Failed to parse user agent string", e);
-                }
-            }
-        }
-    }
-
     protected void captureRequestHeaderSize(HttpRequest httpRequest) {
         Log.e("InnerHandle", "captureRequestHeaderSize " + harEntry.getId());
         String requestLine = httpRequest.getMethod().toString() + ' ' + httpRequest.getUri() + ' ' + httpRequest.getProtocolVersion().toString();
@@ -383,7 +368,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         HttpHeaders headers = httpRequest.headers();
         requestHeadersSize += BrowserMobHttpUtil.getHeaderSize(headers);
 
-        harEntry.getRequest().setHeadersSize(requestHeadersSize);
+        harRequest.getRequest().setHeadersSize(requestHeadersSize);
     }
 
     protected void captureRequestCookies(HttpRequest httpRequest) {
@@ -401,7 +386,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
             harCookie.setName(cookie.name());
             harCookie.setValue(cookie.value());
 
-            harEntry.getRequest().getCookies().add(harCookie);
+            harRequest.getRequest().getCookies().add(harCookie);
             harRequest.addHeader(cookie.name(), cookie.value());
         }
     }
@@ -423,7 +408,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
     protected void captureHeaders(HttpHeaders headers) {
         Log.e("InnerHandle", "captureHeaders " + harEntry.getId());
         for (Map.Entry<String, String> header : headers.entries()) {
-            harEntry.getRequest().getHeaders().add(new HarNameValuePair(header.getKey(), header.getValue()));
+            harRequest.getRequest().getHeaders().add(new HarNameValuePair(header.getKey(), header.getValue()));
             harRequest.addHeader(header.getKey(), header.getValue());
         }
     }
@@ -431,10 +416,12 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
     protected void captureRequestContent(HttpRequest httpRequest, byte[] fullMessage) {
         Log.e("InnerHandle", "captureRequestContent " + harEntry.getId());
         if (fullMessage.length == 0) {
+            harRequest.getRequest().getContent().setText("Empty body");
             return;
         }
 
-        harEntry.getRequest().getContent().setBinaryContent(fullMessage);
+        harRequest.getRequest().getContent().setBinaryContent(fullMessage);
+        harRequest.getRequest().getContent().setText(fullMessage.length + " bytes");
 
         String contentType = HttpHeaders.getHeader(httpRequest, HttpHeaders.Names.CONTENT_TYPE);
         if (contentType == null) {
@@ -443,7 +430,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         }
 
         HarPostData postData = new HarPostData();
-        harEntry.getRequest().setPostData(postData);
+        harRequest.getRequest().setPostData(postData);
 
         postData.setMimeType(contentType);
 
@@ -481,13 +468,13 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 }
             }
 
-            harEntry.getRequest().getPostData().setParams(paramBuilder.build());
+            harRequest.getRequest().getPostData().setParams(paramBuilder.build());
         } else {
             //TODO: implement capture of files and multipart form data
 
             // not URL encoded, so let's grab the body of the POST and capture that
             String postBody = BrowserMobHttpUtil.getContentAsString(fullMessage, charset);
-            harEntry.getRequest().getPostData().setText(postBody);
+            harRequest.getRequest().getPostData().setText(postBody);
         }
     }
 
@@ -497,7 +484,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         boolean forceBinary = false;
 
         if (fullMessage.length != 0) {
-            harEntry.getResponse().getContent().setBinaryContent(fullMessage);
+            harResponse.getResponse().getContent().setBinaryContent(fullMessage);
         }
 
         String contentType = HttpHeaders.getHeader(httpResponse, HttpHeaders.Names.CONTENT_TYPE);
@@ -528,12 +515,12 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
 
         if (!forceBinary && BrowserMobHttpUtil.hasTextualContent(contentType)) {
             String text = BrowserMobHttpUtil.getContentAsString(fullMessage, charset);
-            harEntry.getResponse().getContent().setText(text);
+            harResponse.getResponse().getContent().setText(text);
         } else if (dataToCapture.contains(CaptureType.RESPONSE_BINARY_CONTENT)) {
-            harEntry.getResponse().getContent().setText("Binary Content " + fullMessage.length + " bytes");
+            harResponse.getResponse().getContent().setText("Binary Content " + fullMessage.length + " bytes");
         }
 
-        harEntry.getResponse().getContent().setSize(fullMessage.length);
+        harResponse.getResponse().getContent().setSize(fullMessage.length);
     }
 
     protected void captureResponse(HttpResponse httpResponse) {
@@ -563,7 +550,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         String contentType = HttpHeaders.getHeader(httpResponse, HttpHeaders.Names.CONTENT_TYPE);
         // don't set the mimeType to null, since mimeType is a required field
         if (contentType != null) {
-            harEntry.getResponse().getContent().setMimeType(contentType);
+            harResponse.getResponse().getContent().setMimeType(contentType);
         }
     }
 
@@ -602,8 +589,8 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 harCookie.setExpires(expires.getTime());
             }
 
-            harEntry.getResponse().getCookies().add(harCookie);
-            harResponse.addHeader(harCookie.getName(),harCookie.getValue());
+            harResponse.getResponse().getCookies().add(harCookie);
+            harResponse.addHeader(harCookie.getName(), harCookie.getValue());
         }
     }
 
@@ -615,15 +602,15 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         HttpHeaders headers = httpResponse.headers();
         responseHeadersSize += BrowserMobHttpUtil.getHeaderSize(headers);
 
-        harEntry.getResponse().setHeadersSize(responseHeadersSize);
+        harResponse.getResponse().setHeadersSize(responseHeadersSize);
     }
 
     protected void captureResponseHeaders(HttpResponse httpResponse) {
         Log.e("InnerHandle", "captureResponseHeaders " + harEntry.getId());
         HttpHeaders headers = httpResponse.headers();
         for (Map.Entry<String, String> header : headers.entries()) {
-            harEntry.getResponse().getHeaders().add(new HarNameValuePair(header.getKey(), header.getValue()));
-            harResponse.addHeader(header.getKey(),header.getValue());
+            harResponse.getResponse().getHeaders().add(new HarNameValuePair(header.getKey(), header.getValue()));
+            harResponse.addHeader(header.getKey(), header.getValue());
         }
     }
 
@@ -631,7 +618,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         Log.e("InnerHandle", "captureRedirectUrl " + harEntry.getId());
         String locationHeaderValue = HttpHeaders.getHeader(httpResponse, HttpHeaders.Names.LOCATION);
         if (locationHeaderValue != null) {
-            harEntry.getResponse().setRedirectURL(locationHeaderValue);
+            harResponse.getResponse().setRedirectURL(locationHeaderValue);
         }
     }
 
@@ -657,6 +644,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         ByteBuf bufferedContent = httpContent.content();
         int contentSize = bufferedContent.readableBytes();
         responseBodySize.addAndGet(contentSize);
+        proxyManager.dataReceived(contentSize);
     }
 
     /**

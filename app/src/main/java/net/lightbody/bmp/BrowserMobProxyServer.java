@@ -454,9 +454,6 @@ public class BrowserMobProxyServer implements BrowserMobProxy {
 
     @Override
     public Har newHar(String initialPageRef, String initialPageTitle) {
-        // eagerly initialize the User Agent String Parser, since it will be needed for the HAR
-        BrowserMobProxyUtil.getUserAgentStringParser();
-
         Har oldHar = getHar();
 
         addHarCaptureFilter();

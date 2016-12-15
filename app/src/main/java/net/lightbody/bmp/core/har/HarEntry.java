@@ -9,6 +9,8 @@ import net.lightbody.bmp.core.json.ISO8601WithTDZDateFormatter;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import me.moxun.dreamcatcher.connector.reporter.NetworkEventReporterImpl;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect
 public class HarEntry {
@@ -22,9 +24,14 @@ public class HarEntry {
     private volatile String serverIPAddress;
     private volatile String connection;
     private volatile String comment = "";
+    private volatile double requestTime;
 
     public HarEntry(String pageref) {
         this.pageref = pageref;
+    }
+
+    public double getRequestTime() {
+        return requestTime;
     }
 
     public void setId(String id) {
@@ -50,6 +57,7 @@ public class HarEntry {
 
     public void setStartedDateTime(Date startedDateTime) {
         this.startedDateTime = startedDateTime;
+        this.requestTime = NetworkEventReporterImpl.now();
     }
 
     /**
