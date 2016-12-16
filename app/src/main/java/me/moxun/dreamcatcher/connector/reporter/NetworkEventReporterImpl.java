@@ -136,6 +136,10 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
             responseJSON.connectionReused = response.connectionReused();
             responseJSON.connectionId = response.connectionId();
             responseJSON.fromDiskCache = response.fromDiskCache();
+
+            //holding
+            //responseJSON.timing = response.getTiming();
+
             Network.ResponseReceivedParams receivedParams = new Network.ResponseReceivedParams();
             receivedParams.requestId = response.requestId();
             receivedParams.frameId = "1";
@@ -344,5 +348,9 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
 
     private static long DreamCatcherNow() {
         return SystemClock.elapsedRealtime();
+    }
+
+    public static double now() {
+        return DreamCatcherNow() / 1000.0;
     }
 }

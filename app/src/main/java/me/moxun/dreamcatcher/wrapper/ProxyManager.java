@@ -100,8 +100,8 @@ public class ProxyManager {
         mRequestBodyHelper.reportDataSent();
     }
 
-    public void dataReceived(DCResponse response) {
-        DCHook.dataReceived(getDCRequestId(), (int) response.getResponse().getBodySize(), 0);
+    public void dataReceived(int bodySize) {
+        //DCHook.dataReceived(getDCRequestId(), bodySize, 0);
     }
 
     public String getDCRequestId() {

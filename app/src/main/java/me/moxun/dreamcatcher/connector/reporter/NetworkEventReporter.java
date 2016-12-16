@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 import javax.annotation.Nullable;
 
+import me.moxun.dreamcatcher.connector.inspector.protocol.module.Network;
+
 /**
  * Interface that callers must invoke in order to supply data to the Network tab in
  * the WebKit Inspector.
@@ -202,6 +204,8 @@ public interface NetworkEventReporter {
      * True if the response was furnished by disk cache; false otherwise or if unknown.
      */
     boolean fromDiskCache();
+
+    @Nullable Network.ResourceTiming getTiming();
   }
 
   interface InspectorHeaders {

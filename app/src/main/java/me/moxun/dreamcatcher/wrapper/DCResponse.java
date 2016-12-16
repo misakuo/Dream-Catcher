@@ -2,7 +2,11 @@ package me.moxun.dreamcatcher.wrapper;
 
 import net.lightbody.bmp.core.har.HarEntry;
 import net.lightbody.bmp.core.har.HarResponse;
+import net.lightbody.bmp.core.har.HarTimings;
 
+import javax.annotation.Nullable;
+
+import me.moxun.dreamcatcher.connector.inspector.protocol.module.Network;
 import me.moxun.dreamcatcher.connector.reporter.NetworkEventReporter;
 
 /**
@@ -54,5 +58,26 @@ public class DCResponse extends DCHeader implements NetworkEventReporter.Inspect
     @Override
     public boolean fromDiskCache() {
         return false;
+    }
+
+    @Nullable
+    @Override
+    public Network.ResourceTiming getTiming() {
+        HarTimings timings = harEntry.getTimings();
+
+        Network.ResourceTiming resourceTiming = new Network.ResourceTiming();
+        resourceTiming.requestTime = harEntry.getRequestTime();
+        resourceTiming.proxyStart = timings.getWait();
+        resourceTiming.proxyEnd = resourceTiming.proxyStart;
+        resourceTiming.dnsStart = resourceTiming.proxyEnd;
+        resourceTiming.dnsEnd = resourceTiming.dnsStart + timings.getDns();
+        resourceTiming.connectionStart = resourceTiming.dnsEnd;
+        resourceTiming.connectionEnd = resourceTiming.connectionStart + timings.getConnect();
+        resourceTiming.sslStart = resourceTiming.connectionEnd;
+        resourceTiming.sslEnd = resourceTiming.sslStart + timings.getSsl();
+        resourceTiming.sendStart = resourceTiming.sslEnd;
+        resourceTiming.sendEnd = resourceTiming.sendStart + timings.getSend();
+        resourceTiming.receivedHeadersEnd = resourceTiming.sendEnd;
+        return resourceTiming;
     }
 }

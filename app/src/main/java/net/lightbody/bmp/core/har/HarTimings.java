@@ -24,7 +24,7 @@ public class HarTimings {
     // the following getters and setters take a TimeUnit parameter, to allow finer precision control when no marshalling to JSON
     public long getBlocked(TimeUnit timeUnit) {
         if (blockedNanos == -1) {
-            return -1;
+            return 0;
         } else {
             return timeUnit.convert(blockedNanos, TimeUnit.NANOSECONDS);
         }
@@ -40,7 +40,7 @@ public class HarTimings {
 
     public long getDns(TimeUnit timeUnit) {
         if (dnsNanos == -1) {
-            return -1;
+            return 0;
         } else {
             return timeUnit.convert(dnsNanos, TimeUnit.NANOSECONDS);
         }
@@ -56,7 +56,7 @@ public class HarTimings {
 
     public long getConnect(TimeUnit timeUnit) {
         if (connectNanos == -1) {
-            return -1;
+            return 0;
         } else {
             return timeUnit.convert(connectNanos, TimeUnit.NANOSECONDS);
         }
@@ -100,7 +100,7 @@ public class HarTimings {
 
     public long getSsl(TimeUnit timeUnit) {
         if (sslNanos == -1) {
-            return -1;
+            return 0;
         } else {
             return timeUnit.convert(sslNanos, TimeUnit.NANOSECONDS);
         }
