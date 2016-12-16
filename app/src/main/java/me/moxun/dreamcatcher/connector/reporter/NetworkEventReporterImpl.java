@@ -137,7 +137,8 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
             responseJSON.connectionId = response.connectionId();
             responseJSON.fromDiskCache = response.fromDiskCache();
 
-            responseJSON.timing = response.getTiming();
+            //holding
+            //responseJSON.timing = response.getTiming();
 
             Network.ResponseReceivedParams receivedParams = new Network.ResponseReceivedParams();
             receivedParams.requestId = response.requestId();

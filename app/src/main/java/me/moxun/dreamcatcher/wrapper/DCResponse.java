@@ -77,7 +77,7 @@ public class DCResponse extends DCHeader implements NetworkEventReporter.Inspect
         resourceTiming.sslEnd = resourceTiming.sslStart + timings.getSsl();
         resourceTiming.sendStart = resourceTiming.sslEnd;
         resourceTiming.sendEnd = resourceTiming.sendStart + timings.getSend();
-        resourceTiming.receivedHeadersEnd = resourceTiming.sendEnd + 50;
+        resourceTiming.receivedHeadersEnd = resourceTiming.sendEnd;
         return resourceTiming;
     }
 }
