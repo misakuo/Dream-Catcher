@@ -138,7 +138,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
             responseJSON.fromDiskCache = response.fromDiskCache();
 
             //holding
-            //responseJSON.timing = response.getTiming();
+            responseJSON.timing = response.getTiming();
 
             Network.ResponseReceivedParams receivedParams = new Network.ResponseReceivedParams();
             receivedParams.requestId = response.requestId();
@@ -305,7 +305,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         if (peerManager != null) {
             Network.DataReceivedParams dataReceivedParams = new Network.DataReceivedParams();
             dataReceivedParams.requestId = requestId;
-            dataReceivedParams.timestamp = DreamCatcherNow() / 1000.0;
+            dataReceivedParams.timestamp = now();
             dataReceivedParams.dataLength = dataLength;
             dataReceivedParams.encodedDataLength = encodedDataLength;
             peerManager.sendNotificationToPeers("Network.dataReceived", dataReceivedParams);

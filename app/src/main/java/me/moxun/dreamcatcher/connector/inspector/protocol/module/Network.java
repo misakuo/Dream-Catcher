@@ -299,6 +299,6 @@ public class Network implements ChromeDevtoolsDomain {
     public double sendEnd;
 
     @JsonProperty(required = true)
-    public double receivedHeadersEnd;
+    public double receiveHeadersEnd;
   }
 }

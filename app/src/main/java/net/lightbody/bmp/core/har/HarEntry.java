@@ -25,6 +25,7 @@ public class HarEntry {
     private volatile String connection;
     private volatile String comment = "";
     private volatile double requestTime;
+    private volatile double totalTime;
 
     public HarEntry(String pageref) {
         this.pageref = pageref;
@@ -32,6 +33,10 @@ public class HarEntry {
 
     public double getRequestTime() {
         return requestTime;
+    }
+
+    public double getTotalTime() {
+        return totalTime;
     }
 
     public void setId(String id) {
@@ -58,6 +63,10 @@ public class HarEntry {
     public void setStartedDateTime(Date startedDateTime) {
         this.startedDateTime = startedDateTime;
         this.requestTime = NetworkEventReporterImpl.now();
+    }
+
+    public void responseFinish() {
+        this.totalTime = (NetworkEventReporterImpl.now() - requestTime) * 1000.0;
     }
 
     /**

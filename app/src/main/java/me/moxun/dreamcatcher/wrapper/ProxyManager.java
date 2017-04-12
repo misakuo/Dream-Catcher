@@ -52,6 +52,7 @@ public class ProxyManager {
     }
 
     public void responseHeadersReceived(DCResponse response) {
+        response.notifyResponse();
         DCHook.responseHeadersReceived(response);
     }
 

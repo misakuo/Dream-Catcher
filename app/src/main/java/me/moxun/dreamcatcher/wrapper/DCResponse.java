@@ -15,6 +15,10 @@ import me.moxun.dreamcatcher.connector.reporter.NetworkEventReporter;
 
 public class DCResponse extends DCHeader implements NetworkEventReporter.InspectorResponse {
 
+    void notifyResponse() {
+        harEntry.responseFinish();
+    }
+
     private HarEntry harEntry;
 
     public DCResponse(HarEntry entry) {
@@ -77,7 +81,7 @@ public class DCResponse extends DCHeader implements NetworkEventReporter.Inspect
         resourceTiming.sslEnd = resourceTiming.sslStart + timings.getSsl();
         resourceTiming.sendStart = resourceTiming.sslEnd;
         resourceTiming.sendEnd = resourceTiming.sendStart + timings.getSend();
-        resourceTiming.receivedHeadersEnd = resourceTiming.sendEnd;
+        resourceTiming.receiveHeadersEnd = harEntry.getTotalTime();
         return resourceTiming;
     }
 }
