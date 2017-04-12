@@ -75,9 +75,9 @@ public class DCResponse extends DCHeader implements NetworkEventReporter.Inspect
         resourceTiming.proxyEnd = resourceTiming.proxyStart;
         resourceTiming.dnsStart = resourceTiming.proxyEnd;
         resourceTiming.dnsEnd = resourceTiming.dnsStart + timings.getDns();
-        resourceTiming.connectionStart = resourceTiming.dnsEnd;
-        resourceTiming.connectionEnd = resourceTiming.connectionStart + timings.getConnect();
-        resourceTiming.sslStart = resourceTiming.connectionEnd;
+        resourceTiming.connectStart = resourceTiming.dnsEnd;
+        resourceTiming.connectEnd = resourceTiming.connectStart + timings.getConnect();
+        resourceTiming.sslStart = resourceTiming.connectEnd;
         resourceTiming.sslEnd = resourceTiming.sslStart + timings.getSsl();
         resourceTiming.sendStart = resourceTiming.sslEnd;
         resourceTiming.sendEnd = resourceTiming.sendStart + timings.getSend();

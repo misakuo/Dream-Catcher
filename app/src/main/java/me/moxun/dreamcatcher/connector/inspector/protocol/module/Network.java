@@ -281,10 +281,10 @@ public class Network implements ChromeDevtoolsDomain {
     public double dnsEnd;
 
     @JsonProperty(required = true)
-    public double connectionStart;
+    public double connectStart;
 
     @JsonProperty(required = true)
-    public double connectionEnd;
+    public double connectEnd;
 
     @JsonProperty(required = true)
     public double sslStart;
